@@ -16,10 +16,10 @@
         android:textSize="30sp" />
 
     <Button
-        android:id="@+id/button_get_ip"
+        android:id="@+id/openFile"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:text="Fetch" />
+        android:text="Open File" />
 
     <EditText
         android:id="@+id/editText_ip"
