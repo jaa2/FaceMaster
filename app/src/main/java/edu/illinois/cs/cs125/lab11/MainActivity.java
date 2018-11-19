@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -27,6 +29,16 @@ public final class MainActivity extends AppCompatActivity {
     private static RequestQueue requestQueue;
 
     /**
+     * View for our text.
+     */
+    private TextView responseTextView;
+
+    /**
+     * Edit text area.
+     */
+    private EditText ipEditText;
+
+    /**
      * Run when this activity comes to the foreground.
      *
      * @param savedInstanceState unused
@@ -41,11 +53,13 @@ public final class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         final Button button = findViewById(R.id.button_get_ip);
         button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                startAPICall("192.17.96.8");
+            public void onClick(final View v) {
+                startAPICall(ipEditText.getText().toString());
             }
         });
+
+        responseTextView = findViewById(R.id.textView_response);
+        ipEditText = findViewById(R.id.editText_ip);
     }
 
 
@@ -96,6 +110,14 @@ public final class MainActivity extends AppCompatActivity {
             Log.d(TAG, response.toString(2));
             // Example of how to pull a field off the returned JSON object
             Log.i(TAG, response.get("hostname").toString());
+
+            String city = response.getString("city");
+            String region = response.getString("region");
+            String country = response.getString("country");
+            String hostname = response.getString("hostname");
+
+            responseTextView.setText(hostname + "\n\n" + city + ", " + region + ", " + country);
+
         } catch (JSONException ignored) { }
     }
 }

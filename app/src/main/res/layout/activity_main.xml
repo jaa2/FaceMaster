@@ -8,9 +8,25 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <TextView
+        android:id="@+id/textView_response"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text='Tap "Fetch" to get hostname info!'
+        android:textSize="30sp" />
+
     <Button
         android:id="@+id/button_get_ip"
         android:layout_width="match_parent"
-        android:layout_height="200px"
+        android:layout_height="100dp"
         android:text="Fetch" />
+
+    <EditText
+        android:id="@+id/editText_ip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="text"
+        android:text="192.17.96.8" />
+
 </LinearLayout>
