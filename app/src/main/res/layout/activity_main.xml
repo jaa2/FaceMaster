@@ -12,21 +12,19 @@
         android:id="@+id/textView_response"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text='Tap "Fetch" to get hostname info!'
+        android:text="Open a file with a face in it then press get results"
         android:textSize="30sp" />
 
     <Button
         android:id="@+id/openFile"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="50dp"
         android:text="Open File" />
 
-    <EditText
-        android:id="@+id/editText_ip"
+    <Button
+        android:id="@+id/get_result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="text"
-        android:text="192.17.96.8" />
+        android:text="Get Results" />
 
 </LinearLayout>

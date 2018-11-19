@@ -1,10 +1,18 @@
 package edu.illinois.cs.cs125.lab11;
 
+
+
+
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.provider.MediaStore;
+import android.support.annotation.CallSuper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,11 +27,30 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.net.URI;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Main class for our UI design lab.
@@ -32,6 +59,8 @@ import java.net.URI;
 public final class MainActivity extends AppCompatActivity {
     private static final int IMAGE_CAPTURE_REQUEST_CODE = 1;
     private static final int READ_REQUEST_CODE = 42;
+    /** Base64 encoded image to submit to API */
+    private String encodedString;
     private Uri currentPhotoURI;
     /** Current file that we are using for our image request. */
     private boolean photoRequestActive = false;
@@ -49,10 +78,6 @@ public final class MainActivity extends AppCompatActivity {
      */
     private TextView responseTextView;
 
-    /**
-     * Edit text area.
-     */
-    private EditText ipEditText;
 
     /**
      * Run when this activity comes to the foreground.
@@ -69,14 +94,17 @@ public final class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        final Button getResult = findViewById(R.id.get_result);
+        getResult.setOnClickListener(v -> {
+            Log.d(TAG, "Open file button clicked");
+            new CallAPI(MainActivity.this).execute("https://api-us.faceplusplus.com/facepp/v3/detect", "gender,age,emotion,ethnicity", encodedString);
+        });
         final Button openFile = findViewById(R.id.openFile);
         openFile.setOnClickListener(v -> {
-            Log.d(TAG, "Open file button clicked");
             startOpenFile();
         });
 
         responseTextView = findViewById(R.id.textView_response);
-        ipEditText = findViewById(R.id.editText_ip);
     }
 
 
@@ -88,34 +116,6 @@ public final class MainActivity extends AppCompatActivity {
         super.onPause();
     }
 
-    /**
-     * Make a call to the IP geolocation API.
-     *
-     * @param ipAddress IP address to look up
-     */
-    void startAPICall(final String ipAddress) {
-        try {
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                    Request.Method.GET,
-                    "https://ipinfo.io/" + ipAddress + "/json",
-                    null,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(final JSONObject response) {
-                            apiCallDone(response);
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(final VolleyError error) {
-                            Log.e(TAG, error.toString());
-                        }
-                    });
-            jsonObjectRequest.setShouldCache(false);
-            requestQueue.add(jsonObjectRequest);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * Handle the response from our IP geolocation API.
@@ -128,10 +128,7 @@ public final class MainActivity extends AppCompatActivity {
             // Example of how to pull a field off the returned JSON object
             Log.i(TAG, response.get("hostname").toString());
 
-            String city = response.getString("city");
-            String region = response.getString("region");
-            String country = response.getString("country");
-            String hostname = response.getString("hostname");
+            System.out.print(response);
 
 
 
@@ -163,6 +160,18 @@ public final class MainActivity extends AppCompatActivity {
             return;
         }
         Log.d(TAG, "Photo selection produced URI " + currentPhotoURI);
-        responseTextView.setText(currentPhotoURI.toString());
+        if (currentPhotoURI != null) {
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), currentPhotoURI);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 50, outputStream);
+                byte[] byteArray = outputStream.toByteArray();
+                encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        }
     }
 }
