@@ -44,6 +44,9 @@ public class CallAPI extends AsyncTask<String, String, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        MainActivity activity = activityReference.get();
+        TextView responseTextView = activity.findViewById(R.id.textView_response);
+        responseTextView.setText("Fetching results");
 
     }
 
@@ -102,7 +105,6 @@ public class CallAPI extends AsyncTask<String, String, String> {
         TextView responseTextView = activity.findViewById(R.id.textView_response);
         try {
             JSONObject obj = new JSONObject(result);
-            System.out.println(obj);
             JSONArray faces = obj.getJSONArray("faces");
             Object facesString = faces.get(0);
             JSONObject facesJSON = (JSONObject) facesString;
@@ -110,9 +112,15 @@ public class CallAPI extends AsyncTask<String, String, String> {
             System.out.println(attributes);
             JSONObject gender = attributes.getJSONObject("gender");
             JSONObject age = attributes.getJSONObject("age");
+            JSONObject ethnicity = attributes.getJSONObject("ethnicity");
+            JSONObject beauty = attributes.getJSONObject("beauty");
+            Double maleScore = beauty.getDouble("male_score");
+            Double femaleScore = beauty.getDouble("female_score");
+            String beautyString = Double.toString((maleScore + femaleScore) / 2);
+            String ethnicityString = ethnicity.getString("value");
             String genderString = gender.getString("value");
             String ageString = age.getString("value");
-            responseTextView.setText("gender = " + genderString + " age = " + ageString);
+            responseTextView.setText("gender = " + genderString + " age = " + ageString + " ethnicity = " + ethnicityString + " beauty = " + beautyString);
         } catch (JSONException e) {
             e.printStackTrace();
             if (responseCode == 200) {

@@ -97,11 +97,12 @@ public final class MainActivity extends AppCompatActivity {
         final Button getResult = findViewById(R.id.get_result);
         getResult.setOnClickListener(v -> {
             Log.d(TAG, "Open file button clicked");
-            new CallAPI(MainActivity.this).execute("https://api-us.faceplusplus.com/facepp/v3/detect", "gender,age,emotion,ethnicity", encodedString);
+            new CallAPI(MainActivity.this).execute("https://api-us.faceplusplus.com/facepp/v3/detect", "gender,age,emotion,ethnicity,beauty", encodedString);
         });
         final Button openFile = findViewById(R.id.openFile);
         openFile.setOnClickListener(v -> {
             startOpenFile();
+            responseTextView.setText("Image loaded");
         });
 
         responseTextView = findViewById(R.id.textView_response);
