@@ -2,22 +2,13 @@ package edu.illinois.cs.cs125.lab11;
 
 import android.os.AsyncTask;
 import android.widget.TextView;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -28,16 +19,22 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.net.ssl.HttpsURLConnection;
 
-
+/** AsyncTask to call the face++ api.
+ */
 public class CallAPI extends AsyncTask<String, String, String> {
+    /**Store API response. */
     private String response = "";
+    /**Response code to request. */
     private int responseCode;
+    /**Reference to Main Activity. */
     private WeakReference<MainActivity> activityReference;
 
-    public CallAPI(MainActivity context) {
+    /** Send request face++ API.
+     * @param context reference to MainActivity
+     */
+    public CallAPI(final MainActivity context) {
         activityReference = new WeakReference<>(context);
     }
 
@@ -51,7 +48,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
     }
 
     @Override
-    protected String doInBackground(String... params) {
+    protected String doInBackground(final String... params) {
         MainActivity activity = activityReference.get();
         TextView responseTextView = activity.findViewById(R.id.textView_response);
         String urlString = params[0];
@@ -68,8 +65,8 @@ public class CallAPI extends AsyncTask<String, String, String> {
             conn.setDoOutput(true);
 
             List<NameValuePair> paramss = new ArrayList<NameValuePair>();
-            paramss.add(new BasicNameValuePair("api_key", "redacted"));
-            paramss.add(new BasicNameValuePair("api_secret", "redacted"));
+            paramss.add(new BasicNameValuePair("api_key", ""));
+            paramss.add(new BasicNameValuePair("api_secret", ""));
             paramss.add(new BasicNameValuePair("image_base64", base64));
             paramss.add(new BasicNameValuePair("return_attributes", attributes));
 
@@ -100,7 +97,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
         return response;
     }
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(final String result) {
         MainActivity activity = activityReference.get();
         TextView responseTextView = activity.findViewById(R.id.textView_response);
         try {
@@ -116,11 +113,12 @@ public class CallAPI extends AsyncTask<String, String, String> {
             JSONObject beauty = attributes.getJSONObject("beauty");
             Double maleScore = beauty.getDouble("male_score");
             Double femaleScore = beauty.getDouble("female_score");
-            String beautyString = Double.toString((maleScore + femaleScore) / 2);
+            String beautyString = String.format("%.2f", (maleScore + femaleScore) / 2);
             String ethnicityString = ethnicity.getString("value");
             String genderString = gender.getString("value");
             String ageString = age.getString("value");
-            responseTextView.setText("gender = " + genderString + " age = " + ageString + " ethnicity = " + ethnicityString + " beauty = " + beautyString);
+            responseTextView.setText("gender = " + genderString + " age = "
+                    + ageString + " ethnicity = " + ethnicityString + " beauty = " + beautyString);
         } catch (JSONException e) {
             e.printStackTrace();
             if (responseCode == 200) {
@@ -129,7 +127,12 @@ public class CallAPI extends AsyncTask<String, String, String> {
         }
     }
 
-    private String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException {
+    /** Create a name value pair.
+     * @param params params to include in the encoding
+     * @return A url encoded name value pair
+     * @throws UnsupportedEncodingException make sure encoding is legal
+     */
+    private String getQuery(final List<NameValuePair> params) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         boolean first = true;
 
