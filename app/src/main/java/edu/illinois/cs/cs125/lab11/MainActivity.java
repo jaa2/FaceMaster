@@ -2,6 +2,7 @@ package edu.illinois.cs.cs125.lab11;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -9,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import com.android.volley.RequestQueue;
@@ -25,6 +28,9 @@ public final class MainActivity extends AppCompatActivity {
     private static final int IMAGE_CAPTURE_REQUEST_CODE = 1;
     /**Code to read a file from the file system. */
     private static final int READ_REQUEST_CODE = 42;
+    /** Code to take a picture. **/
+    private static final int CAMERA_REQUEST_CODE = 100;
+
     /** Base64 encoded image to submit to API. */
     private String encodedString;
     /**Uri of current selected photo. */
@@ -72,6 +78,22 @@ public final class MainActivity extends AppCompatActivity {
             startOpenFile();
             responseTextView.setText("Image loaded");
         });
+
+        final Button buttonOpenCamera = findViewById(R.id.buttonOpenCamera);
+        buttonOpenCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+            }
+        });
+
+        // Make sure the camera exists on the hardware
+        if (!getApplicationContext().getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+            ViewGroup layout = (ViewGroup) buttonOpenCamera.getParent();
+            layout.removeView(buttonOpenCamera);
+        }
 
         responseTextView = findViewById(R.id.textView_response);
     }
