@@ -58,12 +58,12 @@ public class CallAPI extends AsyncTask<String, String, String> {
         try {
 
             URL url = new URL(urlString);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
-            conn.setRequestMethod("POST");
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
 
             List<NameValuePair> paramss = new ArrayList<NameValuePair>();
             paramss.add(new BasicNameValuePair("api_key", "0HFtUVIIWdcDNHFmAXYiCEetnogHt_xe"));
@@ -71,19 +71,19 @@ public class CallAPI extends AsyncTask<String, String, String> {
             paramss.add(new BasicNameValuePair("image_base64", base64));
             paramss.add(new BasicNameValuePair("return_attributes", attributes));
 
-            OutputStream os = conn.getOutputStream();
+            OutputStream outputStream = connection.getOutputStream();
             BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(os, "UTF-8"));
-            writer.write(getQuery(paramss));
+                    new OutputStreamWriter(outputStream, "UTF-8"));
+            writer.write(getAppend(paramss));
             writer.flush();
             writer.close();
-            os.close();
-            conn.connect();
-            responseCode = conn.getResponseCode();
+            outputStream.close();
+            connection.connect();
+            responseCode = connection.getResponseCode();
             System.out.println(responseCode);
             if (responseCode == HttpsURLConnection.HTTP_OK) {
                 String line;
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 while ((line = br.readLine()) != null) {
                     response += line;
                 }
@@ -153,17 +153,17 @@ public class CallAPI extends AsyncTask<String, String, String> {
     }
 
     /** Create a name value pair.
-     * @param params params to include in the encoding
+     * @param parameters params to include in the encoding
      * @return A url encoded name value pair
      * @throws UnsupportedEncodingException make sure encoding is legal
      */
-    private String getQuery(final List<NameValuePair> params) throws UnsupportedEncodingException {
+    private String getAppend(final List<NameValuePair> parameters) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
-        boolean first = true;
+        boolean flag = true;
 
-        for (NameValuePair pair : params) {
-            if (first) {
-                first = false;
+        for (NameValuePair pair : parameters) {
+            if (flag) {
+                flag = false;
             } else {
                 result.append("&");
             }
