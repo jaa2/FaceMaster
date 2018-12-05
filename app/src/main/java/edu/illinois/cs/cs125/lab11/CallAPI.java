@@ -65,8 +65,8 @@ public class CallAPI extends AsyncTask<String, String, String> {
             conn.setDoOutput(true);
 
             List<NameValuePair> paramss = new ArrayList<NameValuePair>();
-            paramss.add(new BasicNameValuePair("api_key", ""));
-            paramss.add(new BasicNameValuePair("api_secret", ""));
+            paramss.add(new BasicNameValuePair("api_key", "0HFtUVIIWdcDNHFmAXYiCEetnogHt_xe"));
+            paramss.add(new BasicNameValuePair("api_secret", "iZ5zKHrfpXq9SdNvQ3rfFqUfE7gSRDlF"));
             paramss.add(new BasicNameValuePair("image_base64", base64));
             paramss.add(new BasicNameValuePair("return_attributes", attributes));
 
