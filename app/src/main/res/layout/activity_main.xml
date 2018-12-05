@@ -12,20 +12,21 @@
         android:id="@+id/textView_response"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Open a file with a face in it then press get results"
-        android:textSize="30sp" />
+        android:text="@string/textView_response_text"
+        android:textSize="16sp" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/imageView_text"
         tools:srcCompat="@tools:sample/avatars" />
 
     <Button
         android:id="@+id/openFile"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:text="Open File" />
 
     <Button
