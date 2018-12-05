@@ -2,4 +2,8 @@
     <string name="app_name">Lab 11</string>
     <string name="textView_response_text">Open a file with a face in it then press \"Get Results.\"</string>
     <string name="imageView_text">Face image</string>
+    <string name="text_openFile">Open File</string>
+    <string name="text_openCamera">Open Camera</string>
+    <string name="text_getResults">Get Results</string>
+    <string name="text_imageLoaded">Image loaded</string>
 </resources>
