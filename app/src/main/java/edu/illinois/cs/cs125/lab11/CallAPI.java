@@ -86,6 +86,9 @@ public class CallAPI extends AsyncTask<String, String, String> {
                 while ((line = br.readLine()) != null) {
                     response += line;
                 }
+            } else if (responseCode == 401 || responseCode == 403) {
+                responseTextView.setText("API Authentication error");
+                response = "nope";
             } else {
                 responseTextView.setText("File too large");
                 response = "nope";
