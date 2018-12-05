@@ -12,6 +12,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -40,7 +41,10 @@ public final class MainActivity extends AppCompatActivity {
     /** Whether a current photo request is being processed. */
     private File currentPhotoFile = null;
     /** Default logging tag for messages from the main activity. */
-    private static final String TAG = "Lab11:Main";
+    private static final String TAG = "FaceMaster";
+
+    /** Max image width or height. **/
+    private static final int MAX_IMAGE_DIMENSION = 300;
 
     /** Request queue for our API requests. */
     private static RequestQueue requestQueue;
@@ -49,6 +53,11 @@ public final class MainActivity extends AppCompatActivity {
      * View for our text.
      */
     private TextView responseTextView;
+
+    /**
+     * ImageView containing the picture of the face.
+     */
+    private ImageView imageView;
 
 
     /**
@@ -92,6 +101,7 @@ public final class MainActivity extends AppCompatActivity {
         }
 
         responseTextView = findViewById(R.id.textView_response);
+        imageView = findViewById(R.id.imageView);
     }
 
 
@@ -134,10 +144,42 @@ public final class MainActivity extends AppCompatActivity {
         if (currentPhotoURI != null) {
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), currentPhotoURI);
+
+                // Create final bitmap
+                Bitmap finalBitmap = bitmap;
+                if (bitmap.getWidth() > MAX_IMAGE_DIMENSION
+                        || bitmap.getHeight() > MAX_IMAGE_DIMENSION) {
+                    int newWidth = bitmap.getWidth();
+                    int newHeight = bitmap.getHeight();
+
+                    if (newWidth > newHeight) {
+                        newWidth = MAX_IMAGE_DIMENSION;
+                        newHeight = MAX_IMAGE_DIMENSION * bitmap.getHeight() / bitmap.getWidth();
+                    } else if (newWidth > 0) {
+                        newHeight = MAX_IMAGE_DIMENSION;
+                        newWidth = MAX_IMAGE_DIMENSION * bitmap.getWidth() / bitmap.getHeight();
+                    }
+
+                    finalBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false);
+                }
+
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 50, outputStream);
+                finalBitmap.compress(Bitmap.CompressFormat.PNG, 50, outputStream);
+
+                ByteArrayOutputStream os2 = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 50, os2);
+                Log.i("STUFF", "Regular bitmap size: " + os2.size());
+                Log.i("STUFF", "Regular bitmap dimensions: " + bitmap.getWidth()
+                        + " " + bitmap.getHeight());
+                Log.i("STUFF", "Final bitmap size: " + outputStream.size());
+                Log.i("STUFF", "Final bitmap dimensions: " + finalBitmap.getWidth()
+                    + " " + finalBitmap.getHeight());
+
                 byte[] byteArray = outputStream.toByteArray();
                 encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+                // Display the image on the image view
+                imageView.setImageBitmap(bitmap);
             } catch (Exception e) {
                 e.printStackTrace();
             }
