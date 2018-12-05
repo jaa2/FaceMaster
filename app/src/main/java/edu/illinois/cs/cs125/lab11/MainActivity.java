@@ -44,7 +44,7 @@ public final class MainActivity extends AppCompatActivity {
     private static final String TAG = "FaceMaster";
 
     /** Max image width or height. **/
-    private static final int MAX_IMAGE_DIMENSION = 300;
+    private static final int MAX_IMAGE_DIMENSION = 512;
 
     /** Request queue for our API requests. */
     private static RequestQueue requestQueue;
