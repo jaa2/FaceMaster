@@ -18,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.net.ssl.HttpsURLConnection;
 
@@ -120,8 +121,29 @@ public class CallAPI extends AsyncTask<String, String, String> {
             String ethnicityString = ethnicity.getString("value");
             String genderString = gender.getString("value");
             String ageString = age.getString("value");
+
+            JSONObject emotion = attributes.getJSONObject("emotion");
+            String emotionString = "neutral";
+            double maxCertainty = -1.0;
+            Iterator<String> emotionIterator = emotion.keys();
+            while (emotionIterator.hasNext()) {
+                String thisEmotionString = emotionIterator.next();
+
+                try {
+                    double thisCertainty = emotion.getDouble(thisEmotionString);
+                    if (thisCertainty > maxCertainty) {
+                        emotionString = thisEmotionString;
+                        maxCertainty = thisCertainty;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
             responseTextView.setText("gender = " + genderString + " age = "
-                    + ageString + " ethnicity = " + ethnicityString + " beauty judged by male = " + maleScore.toString() + " beauty judged by female = " + femaleScore.toString());
+                    + ageString + " ethnicity = " + ethnicityString + "\nbeauty judged by male = "
+                    + maleScore.toString() + " beauty judged by female = " + femaleScore.toString()
+                    + "\nemotion: " + emotionString);
         } catch (JSONException e) {
             e.printStackTrace();
             if (responseCode == 200) {
