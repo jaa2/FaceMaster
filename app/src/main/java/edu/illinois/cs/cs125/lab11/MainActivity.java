@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
@@ -76,16 +75,13 @@ public final class MainActivity extends AppCompatActivity {
         final Button openFile = findViewById(R.id.openFile);
         openFile.setOnClickListener(v -> {
             startOpenFile();
-            responseTextView.setText("Image loaded");
+            responseTextView.setText(getString(R.string.text_imageLoaded));
         });
 
         final Button buttonOpenCamera = findViewById(R.id.buttonOpenCamera);
-        buttonOpenCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
-            }
+        buttonOpenCamera.setOnClickListener(v -> {
+            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
         });
 
         // Make sure the camera exists on the hardware
