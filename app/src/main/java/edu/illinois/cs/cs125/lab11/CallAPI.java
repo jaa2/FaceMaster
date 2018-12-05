@@ -121,7 +121,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
             String genderString = gender.getString("value");
             String ageString = age.getString("value");
             responseTextView.setText("gender = " + genderString + " age = "
-                    + ageString + " ethnicity = " + ethnicityString + " beauty = " + beautyString);
+                    + ageString + " ethnicity = " + ethnicityString + " beauty judged by male = " + maleScore.toString() + " beauty judged by female = " + femaleScore.toString());
         } catch (JSONException e) {
             e.printStackTrace();
             if (responseCode == 200) {
