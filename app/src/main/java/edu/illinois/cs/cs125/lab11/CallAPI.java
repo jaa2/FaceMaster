@@ -99,9 +99,11 @@ public class CallAPI extends AsyncTask<String, String, String> {
                 response = "nope";
 
             }
+            connection.disconnect();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+
         return response;
     }
     @Override
