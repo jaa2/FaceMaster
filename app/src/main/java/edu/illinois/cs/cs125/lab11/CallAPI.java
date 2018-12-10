@@ -1,6 +1,10 @@
 package edu.illinois.cs.cs125.lab11;
 
 import android.os.AsyncTask;
+import android.transition.ChangeBounds;
+import android.transition.Transition;
+import android.transition.TransitionManager;
+import android.view.animation.BounceInterpolator;
 import android.widget.TextView;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -140,10 +144,17 @@ public class CallAPI extends AsyncTask<String, String, String> {
                 }
             }
 
+            // Smooth transition
+            Transition changeTransition = new ChangeBounds();
+            changeTransition.setDuration(1000L);
+            changeTransition.setInterpolator(new BounceInterpolator());
+            TransitionManager.beginDelayedTransition(activity.findViewById(R.id.tableLayout));
+
             responseTextView.setText("gender = " + genderString + " age = "
                     + ageString + " ethnicity = " + ethnicityString + "\nbeauty judged by male = "
                     + maleScore.toString() + " beauty judged by female = " + femaleScore.toString()
-                    + "\nemotion: " + emotionString);
+                    + "\nemotion: " + emotionString + " (emotion confidence: " + maxCertainty
+                    + "%)");
         } catch (JSONException e) {
             e.printStackTrace();
             if (responseCode == 200) {
