@@ -166,9 +166,9 @@ public final class MainActivity extends AppCompatActivity {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 finalBitmap.compress(Bitmap.CompressFormat.PNG, 50, outputStream);
 
-                ByteArrayOutputStream os2 = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 50, os2);
-                Log.i("STUFF", "Regular bitmap size: " + os2.size());
+                ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 50, outputStream2);
+                Log.i("STUFF", "Regular bitmap size: " + outputStream2.size());
                 Log.i("STUFF", "Regular bitmap dimensions: " + bitmap.getWidth()
                         + " " + bitmap.getHeight());
                 Log.i("STUFF", "Final bitmap size: " + outputStream.size());
