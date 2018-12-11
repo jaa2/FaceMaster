@@ -8,9 +8,13 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.transition.ChangeBounds;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.view.animation.BounceInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -84,7 +88,7 @@ public final class MainActivity extends AppCompatActivity {
         final Button openFile = findViewById(R.id.openFile);
         openFile.setOnClickListener(v -> {
             startOpenFile();
-            responseTextView.setText(getString(R.string.text_imageLoaded));
+            changeResultText(getString(R.string.text_imageLoaded));
         });
 
         final Button buttonOpenCamera = findViewById(R.id.buttonOpenCamera);
@@ -104,6 +108,18 @@ public final class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
     }
 
+    /**
+     * Change the text and apply a transition.
+     * @param text New text for the result text view.
+     */
+    public void changeResultText(final String text) {
+        responseTextView.setText(text);
+        // Smooth transition
+        Transition changeTransition = new ChangeBounds();
+        changeTransition.setDuration(1000L);
+        changeTransition.setInterpolator(new BounceInterpolator());
+        TransitionManager.beginDelayedTransition(findViewById(R.id.tableLayout));
+    }
 
     /**
      * Run when this activity is no longer visible.
@@ -131,19 +147,40 @@ public final class MainActivity extends AppCompatActivity {
             }
             return;
         }
+
+        boolean gotBitmap = false;
+        Bitmap photo = null;
+
         if (requestCode == READ_REQUEST_CODE) {
             currentPhotoURI = resultData.getData();
         } else if (requestCode == IMAGE_CAPTURE_REQUEST_CODE) {
             currentPhotoURI = Uri.fromFile(currentPhotoFile);
             photoRequestActive = false;
+        } else if (requestCode == CAMERA_REQUEST_CODE) {
+            // Make sure the result is OK
+            photo = (Bitmap) resultData.getExtras().get("data");
+            gotBitmap = true;
+
+            if (photo == null) {
+                return;
+            }
         } else {
             Log.w(TAG, "Unhandled activityResult with code " + requestCode);
             return;
         }
         Log.d(TAG, "Photo selection produced URI " + currentPhotoURI);
-        if (currentPhotoURI != null) {
+        if (currentPhotoURI != null || gotBitmap) {
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), currentPhotoURI);
+                Bitmap bitmap;
+                if (!gotBitmap) {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), currentPhotoURI);
+                } else {
+                    bitmap = photo;
+                }
+
+                if (bitmap == null) {
+                    return;
+                }
 
                 // Create final bitmap
                 Bitmap finalBitmap = bitmap;

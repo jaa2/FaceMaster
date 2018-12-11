@@ -24,6 +24,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+
 import javax.net.ssl.HttpsURLConnection;
 
 /** AsyncTask to call the face++ api.
@@ -48,8 +50,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
         super.onPreExecute();
         MainActivity activity = activityReference.get();
         TextView responseTextView = activity.findViewById(R.id.textView_response);
-        responseTextView.setText("Fetching results");
-
+        activity.changeResultText("Fetching results...");
     }
 
     @Override
@@ -92,10 +93,10 @@ public class CallAPI extends AsyncTask<String, String, String> {
                     response += line;
                 }
             } else if (responseCode == 401 || responseCode == 403) {
-                responseTextView.setText("API Authentication error");
+                activity.changeResultText("API Authentication error.");
                 response = "nope";
             } else {
-                responseTextView.setText("File too large");
+                activity.changeResultText("File too large.");
                 response = "nope";
 
             }
@@ -113,6 +114,11 @@ public class CallAPI extends AsyncTask<String, String, String> {
         try {
             JSONObject obj = new JSONObject(result);
             JSONArray faces = obj.getJSONArray("faces");
+
+            if (faces.length() == 0) {
+                activity.changeResultText("No face found!");
+            }
+
             Object facesString = faces.get(0);
             JSONObject facesJSON = (JSONObject) facesString;
             JSONObject attributes = facesJSON.getJSONObject("attributes");
@@ -123,7 +129,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
             JSONObject beauty = attributes.getJSONObject("beauty");
             Double maleScore = beauty.getDouble("male_score");
             Double femaleScore = beauty.getDouble("female_score");
-            String beautyString = String.format("%.2f", (maleScore + femaleScore) / 2);
+            String beautyString = String.format(Locale.US, "%.2f", (maleScore + femaleScore) / 2);
             String ethnicityString = ethnicity.getString("value");
             String genderString = gender.getString("value");
             String ageString = age.getString("value");
@@ -152,15 +158,14 @@ public class CallAPI extends AsyncTask<String, String, String> {
             changeTransition.setInterpolator(new BounceInterpolator());
             TransitionManager.beginDelayedTransition(activity.findViewById(R.id.tableLayout));
 
-            responseTextView.setText("gender = " + genderString + " age = "
-                    + ageString + " ethnicity = " + ethnicityString + "\nbeauty judged by male = "
-                    + maleScore.toString() + " beauty judged by female = " + femaleScore.toString()
-                    + "\nemotion: " + emotionString + " (emotion confidence: " + maxCertainty
-                    + "%)");
+            activity.changeResultText("Gender: " + genderString + "\nAge: " + ageString
+                + "\nEthnicity: " + ethnicityString + "\nBeauty: " + beautyString
+                + "\nEmotion: " + emotionString + " (confidence: " + maxCertainty + "%)");
         } catch (JSONException e) {
             e.printStackTrace();
             if (responseCode == 200) {
-                responseTextView.setText("No face found");
+                activity.changeResultText("No face found");
+                System.out.println(result);
             }
         }
     }
