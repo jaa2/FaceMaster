@@ -5,5 +5,5 @@
     <string name="text_openFile">Open File</string>
     <string name="text_openCamera">Open Camera</string>
     <string name="text_getResults">Get Results</string>
-    <string name="text_imageLoaded">Image loaded</string>
+    <string name="text_imageLoaded"></string>
 </resources>
