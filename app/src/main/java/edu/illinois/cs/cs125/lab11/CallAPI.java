@@ -188,7 +188,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
     }
 
     /** Create a name value pair.
-     * @param parameters params to include in the encoding
+     * @param pairs params to include in the encoding
      * @return A url encoded name value pair
      * @throws UnsupportedEncodingException make sure encoding is legal
      */
