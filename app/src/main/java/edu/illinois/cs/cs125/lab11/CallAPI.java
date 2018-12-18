@@ -175,22 +175,21 @@ public class CallAPI extends AsyncTask<String, String, String> {
      * @return A url encoded name value pair
      * @throws UnsupportedEncodingException make sure encoding is legal
      */
-    private String getAppend(final List<NameValuePair> parameters) throws UnsupportedEncodingException {
-        StringBuilder result = new StringBuilder();
-        boolean flag = true;
+    private String getAppend(final List<NameValuePair> pairs) throws UnsupportedEncodingException {
+        boolean onFirst = true;
+        String finalStr = "";
 
-        for (NameValuePair pair : parameters) {
-            if (flag) {
-                flag = false;
+        for (int i = 0; i < pairs.size(); i++) {
+            if (!onFirst) {
+                finalStr += "&";
             } else {
-                result.append("&");
+                onFirst = false;   
             }
-            result.append(URLEncoder.encode(pair.getName(), "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
+            NameValuePair thisPair = pairs.get(i);
+            finalStr += URLEncoder.encode(thisPair.getName(), "UTF-8") + "=" + URLEncoder.encode(thisPair.getValue(), "UTF-8");
         }
 
-        return result.toString();
+        return finalStr;
     }
 
 }
