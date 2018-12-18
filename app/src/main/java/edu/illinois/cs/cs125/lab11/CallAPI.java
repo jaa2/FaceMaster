@@ -88,7 +88,10 @@ public class CallAPI extends AsyncTask<String, String, String> {
             // Write our parameters to the stream
             OutputStream outputStream = connection.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-            writer.write();
+
+            String ourParamsAsString = getAppend(paramss);
+            writer.write(ourParamsAsString);
+
             writer.close();
             outputStream.close();
             
