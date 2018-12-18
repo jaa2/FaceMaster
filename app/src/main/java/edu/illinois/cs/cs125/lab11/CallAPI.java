@@ -62,35 +62,52 @@ public class CallAPI extends AsyncTask<String, String, String> {
         String base64 = params[2];
         try {
 
+            // Get URL to use
             URL url = new URL(urlString);
+            
+            // Open an HTTP connection to that URL
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setReadTimeout(10000);
-            connection.setConnectTimeout(15000);
+            
+            // Set timeouts to be lengthy based on experience with bad Wi-Fi
+            connection.setReadTimeout(15000);
+            connection.setConnectTimeout(20000);
             connection.setRequestMethod("POST");
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
 
+            // Create our list of parameters
             List<NameValuePair> paramss = new ArrayList<NameValuePair>();
             paramss.add(new BasicNameValuePair("api_key", "0HFtUVIIWdcDNHFmAXYiCEetnogHt_xe"));
             paramss.add(new BasicNameValuePair("api_secret", "iZ5zKHrfpXq9SdNvQ3rfFqUfE7gSRDlF"));
             paramss.add(new BasicNameValuePair("image_base64", base64));
             paramss.add(new BasicNameValuePair("return_attributes", attributes));
-
+            
+            // Enable writing to an output stream (sending the parameters)
+            // and reading from the stream (getting the response)
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            
+            // Write our parameters to the stream
             OutputStream outputStream = connection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(outputStream, "UTF-8"));
-            writer.write(getAppend(paramss));
-            writer.flush();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+            writer.write();
             writer.close();
             outputStream.close();
+            
+            // Connect to the HTTP server
             connection.connect();
+            
+            // Get our response back
             responseCode = connection.getResponseCode();
             System.out.println(responseCode);
+            
+            // Handle the HTTP 200 (OK) response code
             if (responseCode == HttpsURLConnection.HTTP_OK) {
-                String line;
-                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                while ((line = br.readLine()) != null) {
-                    response += line;
+                // Get a BufferedReader for our response (the input stream)
+                BufferedReader responseReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                
+                // Read all of the response, line by line
+                for (String thisLine = responseReader.readLine(); thisLine != null;
+                     thisLine = responseReader.readLine()) {
+                    response += thisLine;
                 }
             } else if (responseCode == 401 || responseCode == 403) {
                 activity.changeResultText("API Authentication error.");
